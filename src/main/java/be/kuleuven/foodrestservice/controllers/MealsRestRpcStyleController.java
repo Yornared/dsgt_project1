@@ -50,4 +50,22 @@ public class MealsRestRpcStyleController {
             return meal1.getId().equals(id);
         });
     }
+
+    @PutMapping("/restrpc/meals/{id}")
+    void updateMeal(@PathVariable String id, @RequestBody Meal updatedMeal){
+        Optional<Meal> existingMeal = mealsRepository.findMeal(id);
+
+        if (existingMeal.isEmpty()) {
+            throw new MealNotFoundException(id);
+        }
+
+        Meal meal = existingMeal.get();
+
+        meal.setName(updatedMeal.getName());
+        meal.setPrice(updatedMeal.getPrice());
+        meal.setKcal(updatedMeal.getKcal());
+        meal.setId(updatedMeal.getId());
+        meal.setDescription(updatedMeal.getDescription());
+        meal.setMealType(updatedMeal.getMealType());
+    }
 }
