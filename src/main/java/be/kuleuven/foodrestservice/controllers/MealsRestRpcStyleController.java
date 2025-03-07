@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Optional;
 
 @RestController
@@ -24,6 +25,18 @@ public class MealsRestRpcStyleController {
         Optional<Meal> meal = mealsRepository.findMeal(id);
 
         return meal.orElseThrow(() -> new MealNotFoundException(id));
+    }
+
+    @GetMapping("/restrpc/meals/cheapest")
+    Meal getCheapestMeal(){
+        Optional<Meal> cheapestMeal = mealsRepository.getAllMeal().stream().min(Comparator.comparingDouble(Meal::getPrice));
+        return cheapestMeal.orElseThrow();
+    }
+
+    @GetMapping("/restrpc/meals/largest")
+    Meal getLargestMeal(){
+        Optional<Meal> cheapestMeal = mealsRepository.getAllMeal().stream().max(Comparator.comparingInt(Meal::getKcal));
+        return cheapestMeal.orElseThrow();
     }
 
     @GetMapping("/restrpc/meals")

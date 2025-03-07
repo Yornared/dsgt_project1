@@ -29,7 +29,7 @@ public class MealsRepository {
         b.setName("Portobello");
         b.setDescription("Portobello Mushroom Burger");
         b.setMealType(MealType.VEGAN);
-        b.setKcal(637);
+        b.setKcal(1100);
         b.setPrice((7.00));
 
         meals.put(b.getId(), b);

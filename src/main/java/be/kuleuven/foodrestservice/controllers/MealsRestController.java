@@ -22,8 +22,22 @@ public class MealsRestController {
         this.mealsRepository = mealsRepository;
     }
 
+    @GetMapping("/rest/meals/cheapest")
+    EntityModel<Meal> getCheapestMeal() {
+        Meal meal = mealsRepository.getAllMeal().stream().min(Comparator.comparingDouble(Meal::getPrice)).orElseThrow();
+
+        return mealToEntityModel(meal.getId(), meal);
+    }
+
+    @GetMapping("/rest/meals/largest")
+    EntityModel<Meal> getLargestMeal() {
+        Meal meal = mealsRepository.getAllMeal().stream().max(Comparator.comparingInt(Meal::getKcal)).orElseThrow();
+
+        return mealToEntityModel(meal.getId(), meal);
+    }
+
     @GetMapping("/rest/meals/{id}")
-    EntityModel<Meal> getMealById(@PathVariable String id) {
+        EntityModel<Meal> getMealById(@PathVariable String id) {
         Meal meal = mealsRepository.findMeal(id).orElseThrow(() -> new MealNotFoundException(id));
 
         return mealToEntityModel(id, meal);
