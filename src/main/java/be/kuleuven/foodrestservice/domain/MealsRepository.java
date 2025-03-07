@@ -55,6 +55,10 @@ public class MealsRepository {
         return meals.values();
     }
 
+    public boolean deleteMeal(String id) {
+        return meals.remove(id) != null;
+    }
+
     public void addMeal(Meal m){
         meals.put(m.getId(), m);
     }
