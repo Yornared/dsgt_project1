@@ -68,4 +68,9 @@ public class MealsRestRpcStyleController {
         meal.setDescription(updatedMeal.getDescription());
         meal.setMealType(updatedMeal.getMealType());
     }
+
+    @PostMapping("/restrpc/meals")
+    void addMeal(@RequestBody Meal newMeal){
+        mealsRepository.addMeal(newMeal);
+    }
 }

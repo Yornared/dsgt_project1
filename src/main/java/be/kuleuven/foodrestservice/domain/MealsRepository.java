@@ -54,4 +54,8 @@ public class MealsRepository {
     public Collection<Meal> getAllMeal() {
         return meals.values();
     }
+
+    public void addMeal(Meal m){
+        meals.put(m.getId(), m);
+    }
 }
