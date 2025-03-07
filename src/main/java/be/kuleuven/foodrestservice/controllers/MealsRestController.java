@@ -43,6 +43,12 @@ public class MealsRestController {
         return mealToEntityModel(meal.getId(), meal);
     }
 
+    @PostMapping("/rest/meals")
+    EntityModel<Meal> addMeal(@RequestBody Meal newMeal) {
+        mealsRepository.addMeal(newMeal);  // You need to implement this in MealsRepository
+        return mealToEntityModel(newMeal.getId(), newMeal);
+    }
+
     @GetMapping("/rest/meals")
     CollectionModel<EntityModel<Meal>> getMeals() {
         Collection<Meal> meals = mealsRepository.getAllMeal();
