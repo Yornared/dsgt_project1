@@ -43,6 +43,15 @@ public class MealsRestController {
         return mealToEntityModel(meal.getId(), meal);
     }
 
+    @DeleteMapping("/rest/meals/{id}")
+    void deleteMeal(@PathVariable String id) {
+        boolean removed = mealsRepository.deleteMeal(id);
+        if (!removed) {
+            throw new MealNotFoundException(id);
+        }
+    }
+
+
     @PostMapping("/rest/meals")
     EntityModel<Meal> addMeal(@RequestBody Meal newMeal) {
         mealsRepository.addMeal(newMeal);  // You need to implement this in MealsRepository
