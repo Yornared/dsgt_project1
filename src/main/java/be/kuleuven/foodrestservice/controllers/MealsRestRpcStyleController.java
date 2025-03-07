@@ -43,4 +43,11 @@ public class MealsRestRpcStyleController {
     Collection<Meal> getMeals() {
         return mealsRepository.getAllMeal();
     }
+
+    @DeleteMapping("/restrpc/meals/{id}")
+    void deleteMeal(@PathVariable String id){
+        boolean meal = mealsRepository.getAllMeal().removeIf(meal1 -> {
+            return meal1.getId().equals(id);
+        });
+    }
 }
