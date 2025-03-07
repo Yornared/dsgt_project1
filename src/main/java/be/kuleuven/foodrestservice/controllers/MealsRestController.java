@@ -51,6 +51,20 @@ public class MealsRestController {
         }
     }
 
+    @PutMapping("/rest/meals/{id}")
+    EntityModel<Meal> updateMeal(@PathVariable String id, @RequestBody Meal updatedMeal) {
+        Meal meal = mealsRepository.findMeal(id).orElseThrow(() -> new MealNotFoundException(id));
+
+        meal.setName(updatedMeal.getName());
+        meal.setPrice(updatedMeal.getPrice());
+        meal.setKcal(updatedMeal.getKcal());
+
+        mealsRepository.addMeal(meal);
+
+        return mealToEntityModel(meal.getId(), meal);
+    }
+
+
 
     @PostMapping("/rest/meals")
     EntityModel<Meal> addMeal(@RequestBody Meal newMeal) {
