@@ -1,8 +1,8 @@
 package be.kuleuven.foodrestservice.controllers;
 
-import be.kuleuven.foodrestservice.domain.Meal;
-import be.kuleuven.foodrestservice.domain.MealsRepository;
+import be.kuleuven.foodrestservice.domain.*;
 import be.kuleuven.foodrestservice.exceptions.MealNotFoundException;
+import be.kuleuven.foodrestservice.exceptions.OrderNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -16,10 +16,68 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 public class MealsRestController {
 
     private final MealsRepository mealsRepository;
+    private final OrderRepository orderRepository;
 
     @Autowired
-    MealsRestController(MealsRepository mealsRepository) {
+    MealsRestController(MealsRepository mealsRepository, OrderRepository orderRepository) {
         this.mealsRepository = mealsRepository;
+        this.orderRepository = orderRepository;
+    }
+
+    @PostMapping("/rest/orders")
+    public EntityModel<OrderConfirmation> createOrder(@RequestBody Order order) {
+        OrderConfirmation confirmation = orderRepository.createOrder(order);
+        return EntityModel.of(confirmation,
+                linkTo(methodOn(MealsRestController.class).getOrderById(confirmation.getOrderId())).withRel("order"),
+                linkTo(methodOn(MealsRestController.class).getAllOrders()).withRel("all-orders"));
+    }
+
+    @GetMapping("/rest/orders/{id}")
+    public EntityModel<Order> getOrderById(@PathVariable String id) {
+        Order order = orderRepository.findOrder(id);
+        if (order == null) {
+            throw new OrderNotFoundException(id);
+        }
+        return orderToEntityModel(id, order);
+    }
+
+    @PutMapping("/rest/orders/{id}")
+    public EntityModel<Order> updateOrder(@PathVariable String id, @RequestBody Order updatedOrder) {
+        updatedOrder.setId(id);
+        orderRepository.addOrder(updatedOrder);
+        return orderToEntityModel(id, updatedOrder);
+    }
+
+    @GetMapping("/rest/orders")
+    public CollectionModel<EntityModel<Order>> getAllOrders() {
+        Collection<Order> orders = orderRepository.getAllOrders();
+
+        List<EntityModel<Order>> orderEntityModels = new ArrayList<>();
+        for (Order order : orders) {
+            EntityModel<Order> em = orderToEntityModel(order.getId(), order);
+            orderEntityModels.add(em);
+        }
+
+        return CollectionModel.of(orderEntityModels,
+                linkTo(methodOn(MealsRestController.class).getAllOrders()).withSelfRel(),
+                linkTo(methodOn(MealsRestController.class).getMeals()).withRel("meals"));
+    }
+
+    @DeleteMapping("/rest/orders/{id}")
+    public EntityModel<Map<String, Boolean>> deleteOrder(@PathVariable String id) {
+        boolean deleted = orderRepository.deleteOrder(id);
+        Map<String, Boolean> result = new HashMap<>();
+        result.put("deleted", deleted);
+
+        return EntityModel.of(result,
+                linkTo(methodOn(MealsRestController.class).getAllOrders()).withRel("all-orders"));
+    }
+
+    private EntityModel<Order> orderToEntityModel(String id, Order order) {
+        return EntityModel.of(order,
+                linkTo(methodOn(MealsRestController.class).getOrderById(id)).withSelfRel(),
+                linkTo(methodOn(MealsRestController.class).getAllOrders()).withRel("rest/orders"),
+                linkTo(methodOn(MealsRestController.class).getMeals()).withRel("rest/meals"));
     }
 
     @GetMapping("/rest/meals/{id}")
