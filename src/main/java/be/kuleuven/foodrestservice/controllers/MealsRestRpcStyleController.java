@@ -56,7 +56,7 @@ public class MealsRestRpcStyleController {
     }
 
     @GetMapping("/restrpc/meals/cheapest")
-    Meal getCheapestMeal(){
+    Meal getCheapestMeal() {
         Optional<Meal> cheapestMeal = mealsRepository.getAllMeal().stream().min(Comparator.comparingDouble(Meal::getPrice));
         return cheapestMeal.orElseThrow();
     }
